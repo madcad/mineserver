@@ -44,7 +44,8 @@ seed_type prng_seed = 0;
 
 MyRNG prng;
 
-MyUniform m_uniformUINT(0, std::numeric_limits<MyUniform::result_type>::max());
+// Substract 1 from maximum variable size, otherwiese you got an float exception.
+MyUniform m_uniformUINT(0, std::numeric_limits<MyUniform::result_type>::max() - 1);
 
 void initPRNG()
 {
