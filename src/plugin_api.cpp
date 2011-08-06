@@ -196,12 +196,17 @@ bool chat_sendmsgTo(const char* user, const char* msg)
     return true;
   }
 
+  std::string message(msg);
+  int mesasage_tokens = message.size() / 119;
   for (std::set<User*>::const_iterator it = Mineserver::get()->users().begin(); it != Mineserver::get()->users().end(); ++it)
   {
     // Don't send to his user if he is DND and the message is a chat message
     if ((*it)->fd && (*it)->logged && userStr == (*it)->nick)
     {
-      (*it)->buffer << (int8_t)PACKET_CHAT_MESSAGE << std::string(msg);
+      for(int i = 0; i <= mesasage_tokens; i++)
+      {
+        (*it)->buffer << (int8_t)PACKET_CHAT_MESSAGE << message.substr(119 * i, (i+1) * 119);
+      }
       return true;
     }
   }
@@ -820,13 +825,13 @@ void mob_moveAnimal(const char*, size_t mobID)
   m->moveAnimal();
 }
 
-void mob_animateMob(const char*, size_t mobID, int animID) 
+void mob_animateMob(const char*, size_t mobID, int animID)
 {
   MobPtr m = Mineserver::get()->mobs()->getMobByID(mobID);
   m->animateMob(animID);
 }
 
-void mob_animateDamage(const char*, size_t mobID, int animID) 
+void mob_animateDamage(const char*, size_t mobID, int animID)
 {
  MobPtr m = Mineserver::get()->mobs()->getMobByID(mobID);
  m->animateDamage(animID);
@@ -1119,7 +1124,7 @@ void init_plugin_api(void)
   plugin_api_pointers.permissions.isOp             = &permission_isOp;
   plugin_api_pointers.permissions.isMember         = &permission_isMember;
   plugin_api_pointers.permissions.isGuest          = &permission_isGuest;
-  
+
   plugin_api_pointers.tools.uniformInt             = &tools_uniformInt;
   plugin_api_pointers.tools.uniform01              = &tools_uniform01;
 }
