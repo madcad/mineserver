@@ -74,7 +74,11 @@
 #define LIBRARY_SYMBOL(x, y) dlsym(x, y)
 #define LIBRARY_ERROR() dlerror()
 #define LIBRARY_CLOSE(x) dlclose(x)
+#ifdef __APPLE__
+#define LIBRARY_EXTENSION ".dylib"
+#else
 #define LIBRARY_EXTENSION ".so"
+#endif
 #endif
 
 #include "blocks/basic.h"
