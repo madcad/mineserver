@@ -70,15 +70,15 @@ void loginPost(const char* userIn){
           std::string message = name;
           if(rank.compare("admin")==0 || rank.compare("admins")==0){
             mineserver->permissions.setAdmin(name.c_str());
-            name += " is Admin";
+            message += " is Admin";
           }else if(rank.compare("op")==0 || rank.compare("ops")==0){
-            name += " is OP";
+            message += " is OP";
             mineserver->permissions.setOp(name.c_str());
           }else if(rank.compare("member")==0 || rank.compare("members")==0){
-            name += " is Member";
+            message += " is Member";
             mineserver->permissions.setMember(name.c_str());
           }else{
-            name += " is Guest";
+            message += " is Guest";
             mineserver->permissions.setGuest(name.c_str());
           }
           mineserver->logger.log(6, "plugin.flatpermissions", message.c_str());
