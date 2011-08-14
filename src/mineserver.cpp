@@ -535,6 +535,7 @@ bool Mineserver::run()
       LOG2(INFO, "Generating spawn area...");
       int size = config()->iData("map.generate_spawn.size");
       bool show_progress = config()->bData("map.generate_spawn.show_progress");
+
 #ifdef __FreeBSD__
       show_progress = false;
 #endif
@@ -861,10 +862,24 @@ bool Mineserver::configDirectoryPrepare(const std::string& path)
 
   //Create recipe/plugin directories
   // TODO: Fill in respective values with config()->sData("system.path.data")) and "system.path.plugins"
-  const std::string directories [] = 
+  const std::string directories [] =
   {
     "plugins",
     "files",
+#ifdef(linux)
+    "files/recipes",
+    "files/recipes/armour",
+    "files/recipes/block",
+    "files/recipes/cloth",
+    "files/recipes/dyes",
+    "files/recipes/food",
+    "files/recipes/materials",
+    "files/recipes/mechanism",
+    "files/recipes/misc",
+    "files/recipes/tools",
+    "files/recipes/transport",
+    "files/recipes/weapons",
+#else
     "files\\recipes",
     "files\\recipes\\armour",
     "files\\recipes\\block",
@@ -877,6 +892,7 @@ bool Mineserver::configDirectoryPrepare(const std::string& path)
     "files\\recipes\\tools",
     "files\\recipes\\transport",
     "files\\recipes\\weapons",
+#endif
   };
   for (size_t i = 0; i < sizeof(directories) / sizeof(directories[0]); i++)
   {
