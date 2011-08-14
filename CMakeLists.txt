@@ -10,6 +10,10 @@ SET(${PROJECT_NAME}_MINOR_VERSION 1)
 SET(${PROJECT_NAME}_PATCH_LEVEL 15)
 
 # set default build to Debug
+IF(APPLE)
+    ADD_DEFINITIONS( "-Dlinux" )
+ENDIF()
+
 IF(NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE Debug
     CACHE STRING "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
