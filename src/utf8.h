@@ -1,7 +1,6 @@
 #ifndef _UTF8_H
 #define _UTF8_H
 
-
 typedef union t_codepoint_tmp
 {
   char c[7];
@@ -87,7 +86,7 @@ inline unsigned int getOneCodepointFromUTF8(const std::string& str, size_t & pos
 
     data[1] = str[position++];
 
-    if ((data[1] & 0xF0) != 0xF0)
+    if ((data[1] & 0xF0) == 0xF0)
     {
       position = str.length();
       return -1;
