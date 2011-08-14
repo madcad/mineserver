@@ -31,6 +31,9 @@
 #include <wordexp.h>  // for wordexp
 #include <sys/stat.h> // for mkdir
 #include <climits>
+#if defined __APPLE__
+  #include <mach-o/dyld.h>
+#endif
 #elif defined(WIN32)
 #include <direct.h>
 #define _WINSOCKAPI_ //Stops windows.h from including winsock.h
@@ -298,14 +301,25 @@ else
 
 std::string pathOfExecutable()
 {
-  const size_t dest_len = 4096;
-  char path[dest_len];
-  std::memset(path, 0, dest_len);
+  uint32_t dest_len = 4096;
+  const uint32_t const_dest_len = 4096;
+  char path[const_dest_len];
+  std::memset(path, 0, const_dest_len);
 
 #if defined(linux)
-
+#if defined __APPLE__
+  uint32_t *dest_len_ptr = &dest_len;
+  if (_NSGetExecutablePath(path, dest_len_ptr) != -1)
+#else
   if (readlink ("/proc/self/exe", path, dest_len) != -1)
+#endif
   {
+#if defined __APPLE__
+    // remove executable name from path:
+    *(strrchr(path,'/'))='\0';
+    // remove last path component name from path:
+    *(strrchr(path,'/'))='\0';
+#endif
     dirname(path);
   }
 
