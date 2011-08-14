@@ -339,10 +339,10 @@ int PacketHandler::login_request(User* user)
     LOG(INFO, "Packets", "Validating " + player + " against minecraft.net: ");
 
     std::string http_request = "GET " + url + " HTTP/1.1\r\n"
-                               + "Host: www.minecraft.net\r\n"
+                               + "Host: session.minecraft.net\r\n"
                                + "Connection: close\r\n\r\n";
 
-    int fd = socket_connect((char*)"50.16.200.224", 80);
+    int fd = socket_connect((char*)"session.minecraft.net", 80);
     if (fd)
     {
 #ifdef WIN32
@@ -590,8 +590,8 @@ int PacketHandler::player_digging(User* user)
   // Blocks that break with first hit
   if (status == BLOCK_STATUS_STARTED_DIGGING &&
       (block == BLOCK_SNOW || block == BLOCK_REED || block == BLOCK_TORCH
-    || block == BLOCK_REDSTONE_WIRE || block == BLOCK_RED_ROSE || block == BLOCK_YELLOW_FLOWER 
-    || block == BLOCK_BROWN_MUSHROOM || block == BLOCK_RED_MUSHROOM 
+    || block == BLOCK_REDSTONE_WIRE || block == BLOCK_RED_ROSE || block == BLOCK_YELLOW_FLOWER
+    || block == BLOCK_BROWN_MUSHROOM || block == BLOCK_RED_MUSHROOM
     || block == BLOCK_REDSTONE_TORCH_OFF || block == BLOCK_REDSTONE_TORCH_ON))
   {
     status = BLOCK_STATUS_BLOCK_BROKEN;
@@ -1245,7 +1245,7 @@ int PacketHandler::disconnect(User* user)
   }
 
   user->buffer.removePacket();
-  
+
   LOG(INFO, "Packets", "Disconnect: " + msg);
 
   return PACKET_OK;
