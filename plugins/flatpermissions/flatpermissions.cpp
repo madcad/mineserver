@@ -67,15 +67,21 @@ void loginPost(const char* userIn){
         std::getline(line,rank);
         if(name.compare(std::string(userIn))==0){
           std::transform(rank.begin(), rank.end(), rank.begin(), ::tolower);
+          std::string message = name;
           if(rank.compare("admin")==0 || rank.compare("admins")==0){
             mineserver->permissions.setAdmin(name.c_str());
+            name += " is Admin";
           }else if(rank.compare("op")==0 || rank.compare("ops")==0){
+            name += " is OP";
             mineserver->permissions.setOp(name.c_str());
           }else if(rank.compare("member")==0 || rank.compare("members")==0){
+            name += " is Member";
             mineserver->permissions.setMember(name.c_str());
           }else{
+            name += " is Guest";
             mineserver->permissions.setGuest(name.c_str());
           }
+          mineserver->logger.log(6, "plugin.flatpermissions", message.c_str());
           break;
         }
       }
