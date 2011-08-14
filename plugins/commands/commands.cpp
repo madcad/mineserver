@@ -84,7 +84,7 @@ struct Command
   std::deque<std::string> names;
   std::string arguments;
   std::string description;
-  CommandCallback callback;  
+  CommandCallback callback;
 };
 
 typedef std::tr1::shared_ptr<Command> ComPtr;
@@ -252,7 +252,7 @@ void giveItemsSelf(std::string user, std::string command, std::deque<std::string
   }
 }
 
-void home(std::string user, std::string command, std::deque<std::string> args)
+void spawn(std::string user, std::string command, std::deque<std::string> args)
 {
   mineserver->chat.sendmsgTo(user.c_str(),"Teleported you home!");
   int x,y,z;
@@ -265,7 +265,7 @@ void setSpawn(std::string user, std::string command, std::deque<std::string> arg
   if(args.size() == 0) {
     double x,y,z;
     mineserver->user.getPosition(user.c_str(), &x,&y,&z,NULL,NULL,NULL);
-    
+
     mineserver->chat.sendmsgTo(user.c_str(),"Set spawn!");
     mineserver->map.setSpawn(x,y,z);
     mineserver->user.teleport(user.c_str(),x, y + 2, z);
@@ -628,9 +628,9 @@ bool startedDiggingFunction(const char* userIn, int32_t x,int8_t y,int32_t z,int
           for(int xpos = xstart; xpos <= xend; xpos ++)
           {
             for(int zpos = zstart;  zpos <= zend; zpos ++)
-            {     
+            {
               for(int ypos = ystart;  ypos <= yend; ypos ++)
-              {  
+              {
                 if(mineserver->map.getBlock(xpos,ypos,zpos,&block,&meta) && block == cuboidMap[user].fromBlock)
                 {
                   mineserver->map.setBlock(xpos,ypos,zpos,cuboidMap[user].toBlock,map);
@@ -640,7 +640,7 @@ bool startedDiggingFunction(const char* userIn, int32_t x,int8_t y,int32_t z,int
           }
           mineserver->chat.sendmsgTo(user.c_str(),"Replace done");
           cuboidMap.erase(user);
-        }        
+        }
       }
     }
   }
@@ -649,7 +649,7 @@ bool startedDiggingFunction(const char* userIn, int32_t x,int8_t y,int32_t z,int
 }
 
 bool blockPlacePreFunction(const char* userIn, int32_t x,int8_t y,int32_t z,int16_t block,int8_t direction)
-{  
+{
   translateDirection(&x,&y,&z,direction);
   std::string user(userIn);
   if(cuboidMap.find(user) != cuboidMap.end())
@@ -690,7 +690,7 @@ bool blockPlacePreFunction(const char* userIn, int32_t x,int8_t y,int32_t z,int1
 			  for(int xpos = xstart; xpos <= xend; xpos ++)
 			  {
 			    for(int zpos = zstart;  zpos <= zend; zpos ++)
-			    {                
+			    {
 				  for(int ypos = ystart;  ypos <= yend; ypos ++)
 				  {
 				    mineserver->map.setBlock(xpos,ypos,zpos,block,0);
@@ -712,7 +712,7 @@ void doNotDisturb(std::string user, std::string command, std::deque<std::string>
   mineserver->user.toggleDND(user.c_str());
 }
 
-void gps(std::string user, std::string command, std::deque<std::string> args) 
+void gps(std::string user, std::string command, std::deque<std::string> args)
 {
   double x,y,z,stance;
   float yaw,pitch;
@@ -726,16 +726,16 @@ void banUser(std::string user, std::string command, std::deque<std::string> args
   return;
 }
 
-void unbanUser(std::string user, std::string command, std::deque<std::string> args) 
+void unbanUser(std::string user, std::string command, std::deque<std::string> args)
 {
   return;
 }
 
-void sendRules(std::string user, std::string command, std::deque<std::string> args) 
+void sendRules(std::string user, std::string command, std::deque<std::string> args)
 {
   std::string line;
   std::ifstream rules("rules.txt");
-  
+
   if(rules.is_open()) {
     while(rules.good()) {
       std::getline(rules, line);
@@ -761,7 +761,7 @@ void sendHelp(std::string user, std::string command, std::deque<std::string> arg
   // the screen at once.
 
   CommandList* commandList = &m_Commands; // defaults
-  //std::string commandColor = MC_COLOR_BLUE;
+  std::string commandColor = MC_COLOR_BLUE;
 
   if (args.size() == 0)
   {
@@ -769,7 +769,7 @@ void sendHelp(std::string user, std::string command, std::deque<std::string> arg
     {
       std::string args = it->second->arguments;
       std::string description = it->second->description;
-      std::string msg = /*commandColor +*/ CHATCMDPREFIX + it->first + " " + args + " : " /*+ MC_COLOR_YELLOW*/ + description;
+      std::string msg = commandColor + CHATCMDPREFIX + it->first + " " + args + " : " /*+ MC_COLOR_YELLOW*/ + description;
       mineserver->chat.sendmsgTo(user.c_str(), msg.c_str());
     }
   }
@@ -780,7 +780,7 @@ void sendHelp(std::string user, std::string command, std::deque<std::string> arg
     {
       std::string args = iter->second->arguments;
       std::string description = iter->second->description;
-      std::string msg = /*commandColor +*/ CHATCMDPREFIX + iter->first + " " + args;
+      std::string msg = commandColor + CHATCMDPREFIX + iter->first + " " + args;
       mineserver->chat.sendmsgTo(user.c_str(), msg.c_str());
       msg = /*MC_COLOR_YELLOW + */CHATCMDPREFIX + description;
       mineserver->chat.sendmsgTo(user.c_str(), msg.c_str());
@@ -840,7 +840,7 @@ PLUGIN_API_EXPORT void CALLCONVERSION commands_init(mineserver_pointer_struct* m
   registerCommand(ComPtr(new Command(parseCmd("give"), "<player> <id/alias> [count]", "Gives <player> [count] pieces of <id/alias>. By default [count] = 1", giveItems)));
   registerCommand(ComPtr(new Command(parseCmd("gps"), "", "Display current coordinates", gps)));
   registerCommand(ComPtr(new Command(parseCmd("help"), "[<commandName>]", "Display this help message.", sendHelp)));
-  registerCommand(ComPtr(new Command(parseCmd("home"), "", "Teleports you to this world's spawn location", home)));
+  registerCommand(ComPtr(new Command(parseCmd("spawn"), "", "Teleports you to this world's spawn location", spawn)));
   registerCommand(ComPtr(new Command(parseCmd("igive i"), "<id/alias> [count]", "Gives self [count] pieces of <id/alias>. By default [count] = 1", giveItemsSelf)));
   registerCommand(ComPtr(new Command(parseCmd("motd"), "", "Displays the server's MOTD", sendMOTD)));
   registerCommand(ComPtr(new Command(parseCmd("players who names list"), "", "Lists online players", playerList)));
