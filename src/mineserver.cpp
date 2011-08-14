@@ -866,7 +866,7 @@ bool Mineserver::configDirectoryPrepare(const std::string& path)
   {
     "plugins",
     "files",
-#ifdef(linux)
+#if defined(linux)
     "files/recipes",
     "files/recipes/armour",
     "files/recipes/block",
