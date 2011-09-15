@@ -100,6 +100,7 @@ enum
   PACKET_PROGRESS_BAR              = 0x69,
   PACKET_TRANSACTION               = 0x6a,
   //PACKET_COMPLEX_ENTITIES          = 0x3b,
+  PACKET_PING                      = 0xfe,
   PACKET_KICK                      = 0xff,
 
 
@@ -313,6 +314,7 @@ public:
   static int respawn(User* user);
   static int change_sign(User* user);
   static int inventory_transaction(User* user);
+  static int server_list_ping(User* user);
 
   static int inventory_change(User* user);
   static int inventory_close(User* user);

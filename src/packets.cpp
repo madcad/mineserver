@@ -87,8 +87,9 @@ void PacketHandler::init()
   packets[PACKET_SIGN]                     = Packets(PACKET_VARIABLE_LEN, &PacketHandler::change_sign);
   packets[PACKET_TRANSACTION]              = Packets(4, &PacketHandler::inventory_transaction);
   packets[PACKET_ENTITY_CROUCH]            = Packets(5, &PacketHandler::entity_crouch);
-  packets[PACKET_WEATHER]		   = Packets(18, &PacketHandler::unhandledPacket);
+  packets[PACKET_WEATHER]                  = Packets(18, &PacketHandler::unhandledPacket);
   packets[PACKET_INCREMENT_STATISTICS]     = Packets(6, &PacketHandler::unhandledPacket);
+  packets[PACKET_PING]                     = Packets(0, &PacketHandler::server_list_ping);
 }
 
 int PacketHandler::unhandledPacket(User* user)
@@ -1326,6 +1327,27 @@ int PacketHandler::respawn(User* user)
   user->dropInventory();
   user->respawn();
   user->buffer.removePacket();
+  return PACKET_OK;
+}
+
+int PacketHandler::server_list_ping(User* user)
+{
+  user->buffer.removePacket();
+
+  std::string temp;
+  std::string delimeter = "§";
+  char buffer [33];
+
+  //TODO: Send correct MOTD, correct number or player
+  temp = "Mineserver MOTD"; // Message of the day
+  temp.append(delimeter);
+  temp.append("0"); // Current number or players
+  temp.append(delimeter);
+  temp.append(itoa(Mineserver::get()->config()->iData("system.user_limit"), buffer,10)); // Max players
+
+
+  user->buffer << (int8_t)PACKET_KICK << temp;
+
   return PACKET_OK;
 }
 

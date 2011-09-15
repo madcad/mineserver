@@ -99,7 +99,8 @@ class Protocol
     static Packet loginResponse(int eid)
     {
       Packet ret;
-      ret << (int8_t)PACKET_LOGIN_RESPONSE << (int32_t)eid << std::string("") << (int64_t)0 << (int8_t)0;
+      //TODO: Max Players, Max Height, Dimension, Server Mode
+      ret << (int8_t)PACKET_LOGIN_RESPONSE << (int32_t)eid << std::string("") << (int64_t)0 << (int32_t)0 << (int8_t)0 << (int8_t)2 << (int8_t)-128 << (int8_t)50;
       return ret;
     }
 
@@ -157,14 +158,14 @@ class Protocol
     static Packet respawn(int world = 0)
     {
       Packet ret;
-      ret << (int8_t)PACKET_RESPAWN << (int8_t)world;
+      ret << (int8_t)PACKET_RESPAWN << (int8_t)world << (int8_t)1 << (int8_t)0 << (int8_t)128 << (int64_t)0;
       return ret;
     }
 
     static Packet updateHealth(int health)
     {
       Packet ret;
-      ret << (int8_t)PACKET_UPDATE_HEALTH << (int16_t)health;
+      ret << (int8_t)PACKET_UPDATE_HEALTH << (int16_t)health << (int16_t)20 << (float)5.0;
       return ret;
     }
 
