@@ -64,10 +64,13 @@ void Item::sendUpdate()
       window = -1;
       t_slot = 0;
     }
-    player->buffer << Protocol::setSlot( (int8_t)window, (int16_t)t_slot, (int16_t) type );
     if (type != -1)
     {
-      player->buffer << (int8_t)count << (int16_t)health;
+      player->buffer << Protocol::setSlot( (int8_t)window, (int16_t)t_slot, (int16_t) type, (int8_t)count, (int16_t)health );
+    }
+    else
+    {
+      player->buffer << Protocol::setSlot( (int8_t)window, (int16_t)t_slot, (int16_t) type );
     }
   }
   // Cases where we're changing items in chests, furnaces etc?

@@ -245,16 +245,14 @@ class Protocol
     }
 
     // Set Slot (http://mc.kev009.com/Protocol#Set_slot_.280x67.29)
-    static Packet setSlot( int8_t windowID, int16_t slot, int16_t itemID, int8_t itemCount = -1, int16_t itemUses = -1)
+    static Packet setSlot( int8_t windowID, int16_t slot, int16_t itemID, int8_t itemCount=0, int16_t itemUses=0)
     {
       Packet ret;
-      if( itemID == -1 )
+      ret << (int8_t)PACKET_SET_SLOT << (int8_t)windowID << (int16_t)slot << (int16_t)itemID;
+
+      if(itemID != (int16_t)-1)
       {
-        ret << (int8_t)PACKET_SET_SLOT << (int8_t)windowID << (int16_t)slot << (int16_t)itemID;
-      }
-      else
-      {
-        ret << (int8_t)PACKET_SET_SLOT << (int8_t)windowID << (int16_t)slot << (int16_t)itemID << (int8_t)itemCount << (int16_t)itemUses;
+        ret << (int8_t)itemCount << (int16_t)itemUses;
       }
       return ret;
     }
