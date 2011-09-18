@@ -50,6 +50,7 @@
 #include "blocks/tracks.h"
 #include "blocks/chest.h"
 #include "blocks/note.h"
+#include "protocol.h"
 #define MINESERVER
 #include "plugin_api.h"
 
@@ -205,7 +206,7 @@ bool chat_sendmsgTo(const char* user, const char* msg)
     {
       for(int i = 0; i <= mesasage_tokens; i++)
       {
-        (*it)->buffer << (int8_t)PACKET_CHAT_MESSAGE << message.substr(119 * i, (i+1) * 119);
+        (*it)->buffer << Protocol::chatMessage( message.substr(119 * i, (i+1) * 119) );
       }
       return true;
     }
@@ -223,7 +224,7 @@ bool chat_sendmsg(const char* msg)
     // Don't send to his user if he is DND and the message is a chat message
     if ((*it)->fd && (*it)->logged && !(*it)->dnd)
     {
-      (*it)->buffer << (int8_t)PACKET_CHAT_MESSAGE << msgStr;
+      (*it)->buffer << Protocol::chatMessage( msgStr );
     }
   }
 
@@ -270,7 +271,7 @@ bool map_setTime(int timeValue)
 {
   Mineserver::get()->map(0)->mapTime = timeValue;
   Packet pkt;
-  pkt << (int8_t)PACKET_TIME_UPDATE << (int64_t)Mineserver::get()->map(0)->mapTime;
+  pkt << Protocol::timeUpdate( (int64_t)Mineserver::get()->map(0)->mapTime );
 
   if (!User::all().empty())
   {

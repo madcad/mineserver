@@ -33,6 +33,7 @@
 #include "map.h"
 #include "tools.h"
 #include "config.h"
+#include "protocol.h"
 
 Creation createList[2258];
 bool configIsRead = false;
@@ -286,13 +287,14 @@ void Furnace::sendToAllUsers()
         {
           if (m_data->items[j].getType() != -1)
           {
-            inv[openinv]->users[user]->buffer << (int8_t)PACKET_SET_SLOT << (int8_t)WINDOW_FURNACE << (int16_t)j << (int16_t)m_data->items[j].getType()
-                                                 << (int8_t)(m_data->items[j].getCount()) << (int16_t)m_data->items[j].getHealth();
+            inv[openinv]->users[user]->buffer << Protocol::setSlot( (int8_t)WINDOW_FURNACE, (int16_t)j, (int16_t)m_data->items[j].getType(),
+                                                                    (int8_t)(m_data->items[j].getCount()),
+                                                                    (int16_t)m_data->items[j].getHealth() );
           }
         }
 
-        inv[openinv]->users[user]->buffer << (int8_t)PACKET_PROGRESS_BAR << (int8_t)WINDOW_FURNACE << (int16_t)PROGRESS_ARROW << (int16_t)(m_data->cookTime * 18);
-        inv[openinv]->users[user]->buffer << (int8_t)PACKET_PROGRESS_BAR << (int8_t)WINDOW_FURNACE << (int16_t)PROGRESS_FIRE  << (int16_t)(m_data->burnTime * 3);
+        inv[openinv]->users[user]->buffer << Protocol::updateProgressBar( (int8_t)WINDOW_FURNACE, (int16_t)PROGRESS_ARROW, (int16_t)(m_data->cookTime * 18) );
+        inv[openinv]->users[user]->buffer << Protocol::updateProgressBar( (int8_t)WINDOW_FURNACE, (int16_t)PROGRESS_FIRE, (int16_t)(m_data->burnTime * 3) );
       }
 
       break;

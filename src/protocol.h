@@ -23,6 +23,14 @@ class Protocol
       return ret;
     }
 
+    // Entity (http://mc.kev009.com/Protocol#Entity_.280x1E.29)
+    static Packet entity( int32_t EID )
+    {
+      Packet ret;
+      ret << (int8_t)PACKET_ENTITY << (int32_t)EID;
+      return ret;
+    }
+
     // Entity Status (http://mc.kev009.com/Protocol#Entity_Status_.280x26.29)
     static Packet entityStatus(int eid, int aid)
     {
@@ -36,6 +44,14 @@ class Protocol
     {
       Packet ret;
       ret << (int8_t)PACKET_ENTITY_METADATA << (int32_t)eid << metadata;
+      return ret;
+    }
+
+    // Attach Entity (http://mc.kev009.com/Protocol#Attach_Entity_.280x27.29)
+    static Packet attachEntity( int32_t EID, int32_t vehicleID)
+    {
+      Packet ret;
+      ret << (int8_t)PACKET_ATTACH_ENTITY << (int32_t)EID << (int32_t)vehicleID;
       return ret;
     }
 
@@ -105,12 +121,36 @@ class Protocol
       return ret;
     }
 
+    // Entity Velocity (http://mc.kev009.com/Protocol#Entity_Velocity_.280x1C.29)
+    static Packet entityVelocity( int32_t EID, int16_t x, int16_t y, int16_t z )
+    {
+      Packet ret;
+      ret << (int8_t)PACKET_ENTITY_VELOCITY << (int16_t)x << (int16_t)y << (int16_t)z;
+      return ret;
+    }
+
     // Login Response (http://mc.kev009.com/Protocol#Server_to_Client)
     static Packet loginResponse(int eid)
     {
       Packet ret;
       //TODO: Max Players, Max Height, Dimension, Server Mode
       ret << (int8_t)PACKET_LOGIN_RESPONSE << (int32_t)eid << std::string("") << (int64_t)0 << (int32_t)0 << (int8_t)0 << (int8_t)2 << (int8_t)-128 << (int8_t)50;
+      return ret;
+    }
+
+    // Handshake (http://mc.kev009.com/Protocol#Handshake_.280x02.29)
+    static Packet handshake( std::string hash )
+    {
+      Packet ret;
+      ret << (int8_t)PACKET_HANDSHAKE << hash;
+      return ret;
+    }
+
+    // Chat Message (http://mc.kev009.com/Protocol#Chat_Message_.280x03.29)
+    static Packet chatMessage( std::string message )
+    {
+      Packet ret;
+      ret << (int8_t)PACKET_HANDSHAKE << message;
       return ret;
     }
 
@@ -201,6 +241,108 @@ class Protocol
     {
       Packet ret;
       ret << (int8_t)PACKET_PLAYER_LIST_ITEM << (std::string)name << (int8_t)online << (int16_t)ping;
+      return ret;
+    }
+
+    // Set Slot (http://mc.kev009.com/Protocol#Set_slot_.280x67.29)
+    static Packet setSlot( int8_t windowID, int16_t slot, int16_t itemID, int8_t itemCount = -1, int16_t itemUses = -1)
+    {
+      Packet ret;
+      if( itemID == -1 )
+      {
+        ret << (int8_t)PACKET_SET_SLOT << (int8_t)windowID << (int16_t)slot << (int16_t)itemID;
+      }
+      else
+      {
+        ret << (int8_t)PACKET_SET_SLOT << (int8_t)windowID << (int16_t)slot << (int16_t)itemID << (int8_t)itemCount << (int16_t)itemUses;
+      }
+      return ret;
+    }
+
+    // Update Sign (http://mc.kev009.com/Protocol#Update_Sign_.280x82.29)
+    static Packet updateSign( int32_t x, int16_t y, int32_t z, std::string text1, std::string text2, std::string text3, std::string text4 )
+    {
+      Packet ret;
+      ret << (int8_t)PACKET_UPDATE_SIGN << (int32_t)x << (int16_t)y << (int32_t)z 
+          << (std::string)text1 << (std::string)text2 << (std::string)text3 << (std::string)text4;
+      return ret;
+    }
+
+    // Pickup Spawn (http://mc.kev009.com/Protocol#Pickup_Spawn_.280x15.29)
+    static Packet pickupSpawn( int32_t EID, int16_t item, int8_t count, int16_t health, int32_t x, int32_t y, int32_t z, int8_t rotation, int8_t pitch, int8_t roll)
+    {
+      Packet ret;
+      ret << (int8_t)PACKET_PICKUP_SPAWN << (int32_t)EID << (int16_t)item << (int8_t)count << (int16_t)health 
+          << (int32_t)x << (int32_t)y << (int32_t)z
+          << (int8_t)rotation << (int8_t)pitch << (int8_t)roll;
+      return ret;
+    }
+
+    // Add Object (http://mc.kev009.com/Protocol#Add_Object.2FVehicle_.280x17.29)
+    static Packet addObject( int32_t EID, int8_t type, int32_t x, int32_t y, int32_t z, int32_t flag )
+    {
+      //TODO: there are three values after the flag, as of 9/18/2011 the wiki is not sure for a fact what it represents.
+      Packet ret;
+      ret << (int8_t)PACKET_ADD_OBJECT << (int32_t)EID << (int8_t)type << (int32_t)x << (int32_t)y << (int32_t)z << (int32_t)flag;
+      return ret;
+    }
+
+    // Map Chunk (http://mc.kev009.com/Protocol#Map_Chunk_.280x33.29)
+    // Doesn't deal with the map data. To be updated
+    static Packet mapChunk( int32_t x, int16_t y, int32_t z, int8_t sizeX, int8_t sizeY, int8_t sizeZ )
+    {
+      Packet ret;
+      ret << (int8_t)PACKET_MAP_CHUNK << (int32_t)x << (int16_t)y << (int32_t)z << (int8_t)sizeX << (int8_t)sizeY << (int8_t)sizeZ;
+      return ret;
+    }
+
+    // Block Change (http://mc.kev009.com/Protocol#Block_Change_.280x35.29)
+    static Packet blockChange( int32_t x, int8_t y, int32_t z, int8_t block, int8_t meta )
+    {
+      Packet ret;
+      ret << (int8_t)PACKET_BLOCK_CHANGE << (int32_t)x << (int8_t)y << (int32_t)z << (int8_t)block << (int8_t)meta;
+      return ret;
+    }
+
+    // Multi Block (http://mc.kev009.com/Protocol#Multi_Block_Change_.280x34.29)
+    // Doesn't deal with map data. To be updated
+    static Packet multiBlock( int32_t chunkX, int32_t chunkZ, int16_t size )
+    {
+      Packet ret;
+      ret << (int8_t) PACKET_MULTI_BLOCK_CHANGE << (int32_t)chunkX << (int32_t)chunkZ << (int16_t)size;
+      return ret;
+    }
+
+    // Block Action (http://mc.kev009.com/Protocol#Block_Action_.280x36.29)
+    static Packet blockAction( int32_t x, int16_t y, int32_t z, int8_t instrument, int8_t pitch )
+    {
+      Packet ret;
+      ret << (int8_t)PACKET_BLOCK_ACTION << (int32_t)x << (int16_t)y << (int32_t)z << (int8_t)instrument << (int8_t)pitch;
+      return ret;
+    }
+
+    // Open Window (http://mc.kev009.com/Protocol#Open_window_.280x64.29)
+    // To be updated. Still needs to be done.
+    static Packet openWindow( int8_t windowID, int8_t inventoryType, std::string windowType, int8_t slots )
+    {
+      Packet ret;
+      ret << (int8_t)PACKET_OPEN_WINDOW << (int8_t)windowID  << (int8_t)inventoryType << (std::string)windowType << (int8_t)slots;
+      return ret;
+    }
+
+    // Update Progress Bar (http://mc.kev009.com/Protocol#Update_progress_bar_.280x69.29)
+    static Packet updateProgressBar( int8_t windowID, int16_t type, int16_t value )
+    {
+      Packet ret;
+      ret << (int8_t)PACKET_UPDATE_PROGRESS_BAR << (int8_t)windowID << (int16_t)type << (int16_t)value;
+      return ret;
+    }
+
+    // Transaction (http://mc.kev009.com/Protocol#Transaction_.280x6A.29)
+    static Packet transaction( int8_t windowID, int16_t actionNumber, int16_t accepted )
+    {
+      Packet ret;
+      ret << (int8_t)PACKET_TRANSACTION << (int8_t)windowID << (int16_t)actionNumber << (int8_t)accepted;
       return ret;
     }
 };

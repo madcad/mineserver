@@ -83,12 +83,12 @@ void PacketHandler::init()
   packets[PACKET_PICKUP_SPAWN]             = Packets(22, &PacketHandler::pickup_spawn);
   packets[PACKET_DISCONNECT]               = Packets(PACKET_VARIABLE_LEN, &PacketHandler::disconnect);
   packets[PACKET_RESPAWN]                  = Packets(0, &PacketHandler::respawn);
-  packets[PACKET_INVENTORY_CHANGE]         = Packets(PACKET_VARIABLE_LEN, &PacketHandler::inventory_change);
-  packets[PACKET_INVENTORY_CLOSE]          = Packets(1, &PacketHandler::inventory_close);
-  packets[PACKET_SIGN]                     = Packets(PACKET_VARIABLE_LEN, &PacketHandler::change_sign);
+  packets[PACKET_WINDOW_CLICK]             = Packets(PACKET_VARIABLE_LEN, &PacketHandler::inventory_change);
+  packets[PACKET_CLOSE_WINDOW]             = Packets(1, &PacketHandler::inventory_close);
+  packets[PACKET_UPDATE_SIGN]              = Packets(PACKET_VARIABLE_LEN, &PacketHandler::change_sign);
   packets[PACKET_TRANSACTION]              = Packets(4, &PacketHandler::inventory_transaction);
-  packets[PACKET_ENTITY_CROUCH]            = Packets(5, &PacketHandler::entity_crouch);
-  packets[PACKET_WEATHER]                  = Packets(18, &PacketHandler::unhandledPacket);
+  packets[PACKET_ENTITY_ACTION]            = Packets(5, &PacketHandler::entity_crouch);
+  packets[PACKET_THUNDERBOLT]              = Packets(18, &PacketHandler::unhandledPacket);
   packets[PACKET_INCREMENT_STATISTICS]     = Packets(6, &PacketHandler::unhandledPacket);
   packets[PACKET_SERVER_LIST_PING]         = Packets(0, &PacketHandler::server_list_ping);
   packets[PACKET_BLOCK_CHANGE]             = Packets(11, &PacketHandler::block_change);
@@ -169,8 +169,7 @@ int PacketHandler::change_sign(User* user)
 
     //Send sign packet to everyone
     Packet pkt;
-    pkt << (int8_t)PACKET_SIGN << x << y << z;
-    pkt << strings1 << strings2 << strings3 << strings4;
+    pkt << Protocol::updateSign( x, y, z, strings1, strings2, strings3, strings4 );
     user->sendAll(pkt);
   }
 
@@ -451,13 +450,13 @@ int PacketHandler::handshake(User* user)
   {
     // Send the unique hash for this player to prompt the client to go to minecraft.net to validate
     LOG(INFO, "Packets", "Handshake: Giving player " + player + " their minecraft.net hash of: " + hash(player));
-    user->buffer << (int8_t)PACKET_HANDSHAKE << hash(player);
+    user->buffer << Protocol::handshake( hash(player) );
   }
   else
   {
     // Send "no validation or password needed" validation
     LOG(INFO, "Packets", "Handshake: No validation required for player " + player + ".");
-    user->buffer << (int8_t)PACKET_HANDSHAKE << std::string("-");
+    user->buffer << Protocol::handshake( std::string("-") );
   }
   // TODO: Add support for prompting user for Server password (once client supports it)
 
@@ -916,8 +915,8 @@ int PacketHandler::player_block_placement(User* user)
     LOG(INFO, "Packets", "Spawn minecart");
     int32_t EID = Mineserver::generateEID();
     Packet pkt;
-    // MINECART
-    pkt << PACKET_ADD_OBJECT << (int32_t)EID << (int8_t)10 << (int32_t)(x * 32 + 16) << (int32_t)(y * 32) << (int32_t)(z * 32 + 16);
+    // MINECART, Not sure of what 0 on end represents 9/18/2011
+    pkt << Protocol::addObject( (int32_t)EID, (int8_t)10, (int32_t)(x * 32 + 16), (int32_t)(y * 32), (int32_t)(z * 32 + 16), 0 );
     user->sendAll(pkt);
   }
 
@@ -1161,7 +1160,7 @@ int PacketHandler::holding_change(User* user)
 
   //Send holding change to others
   Packet pkt;
-  pkt << (int8_t)PACKET_ENTITY_EQUIPMENT << (int32_t)user->UID << (int16_t)0 << (int16_t)user->inv[itemSlot + 36].getType() << (int16_t)user->inv[itemSlot + 36].getHealth();
+  pkt << Protocol::entityEquipment( (int32_t)user->UID, (int16_t)0, (int16_t)user->inv[itemSlot + 36].getType(), (int16_t)user->inv[itemSlot + 36].getHealth() );
   user->sendOthers(pkt);
 
   // Set current itemID to user
@@ -1184,7 +1183,7 @@ int PacketHandler::arm_animation(User* user)
   user->buffer.removePacket();
 
   Packet pkt;
-  pkt << (int8_t)PACKET_ANIMATION << (int32_t)user->UID << animType;
+  pkt << Protocol::animation( (int32_t)user->UID, animType );
   user->sendOthers(pkt);
 
   (static_cast<Hook1<bool, const char*>*>(Mineserver::get()->plugin()->getHook("PlayerArmSwing")))->doAll(user->nick.c_str());
@@ -1275,13 +1274,13 @@ int PacketHandler::use_entity(User* user)
     //Attach
     if (user->attachedTo == 0)
     {
-      pkt << PACKET_ATTACH_ENTITY << (int32_t)user->UID << (int32_t)target;
+      pkt << Protocol::attachEntity( (int32_t)user->UID, (int32_t)target );
       user->attachedTo = target;
     }
     //Detach
     else
     {
-      pkt << PACKET_ATTACH_ENTITY << (int32_t)user->UID << (int32_t) - 1;
+      pkt << Protocol::attachEntity( (int32_t)user->UID, (int32_t) - 1 );
       user->attachedTo = 0;
     }
     user->sendAll(pkt);
@@ -1301,7 +1300,7 @@ int PacketHandler::use_entity(User* user)
         if ((*it)->health <= 0)
         {
           Packet pkt;
-          pkt << PACKET_ENTITY_STATUS << (int32_t)(*it)->UID << (int8_t)3;
+          pkt << Protocol::entityStatus( (int32_t)(*it)->UID, (int8_t)3 );
           (*it)->sendOthers(pkt);
         }
         break;
