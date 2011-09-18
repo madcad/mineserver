@@ -49,7 +49,7 @@ Mob::Mob()
 //, 3 (leave bed), 104 (crouch), or 105 (uncrouch). Getting 102 somewhat often, too. 
 void Mob::animateMob(int animID)
 {
-  User::sendAll(Protocol::armAnimation(UID, animID));
+  User::sendAll(Protocol::animation(UID, animID));
 }
 
 void Mob::sethealth(int health)
@@ -77,7 +77,7 @@ void Mob::sethealth(int health)
 //Possible values: 2 (entity hurt), 3 (entity dead?), 4, 5
 void Mob::animateDamage(int animID)
 {
-  User::sendAll(Protocol::deathAnimation(UID, animID));
+  User::sendAll(Protocol::entityStatus(UID, animID));
 }
 
 void Mob::updateMetadata()

@@ -51,6 +51,7 @@
 #include "sockets.h"
 #include "tools.h"
 #include "user.h"
+#include "protocol.h"
 #include "blocks/basic.h"
 #include "blocks/default.h"
 #include "blocks/note.h"
@@ -78,7 +79,7 @@ void PacketHandler::init()
   packets[PACKET_PLAYER_DIGGING]           = Packets(11, &PacketHandler::player_digging);
   packets[PACKET_PLAYER_BLOCK_PLACEMENT]   = Packets(PACKET_VARIABLE_LEN, &PacketHandler::player_block_placement);
   packets[PACKET_HOLDING_CHANGE]           = Packets(2, &PacketHandler::holding_change);
-  packets[PACKET_ARM_ANIMATION]            = Packets(5, &PacketHandler::arm_animation);
+  packets[PACKET_ANIMATION]                = Packets(5, &PacketHandler::arm_animation);
   packets[PACKET_PICKUP_SPAWN]             = Packets(22, &PacketHandler::pickup_spawn);
   packets[PACKET_DISCONNECT]               = Packets(PACKET_VARIABLE_LEN, &PacketHandler::disconnect);
   packets[PACKET_RESPAWN]                  = Packets(0, &PacketHandler::respawn);
@@ -89,7 +90,8 @@ void PacketHandler::init()
   packets[PACKET_ENTITY_CROUCH]            = Packets(5, &PacketHandler::entity_crouch);
   packets[PACKET_WEATHER]                  = Packets(18, &PacketHandler::unhandledPacket);
   packets[PACKET_INCREMENT_STATISTICS]     = Packets(6, &PacketHandler::unhandledPacket);
-  packets[PACKET_PING]                     = Packets(0, &PacketHandler::server_list_ping);
+  packets[PACKET_SERVER_LIST_PING]         = Packets(0, &PacketHandler::server_list_ping);
+  packets[PACKET_BLOCK_CHANGE]             = Packets(11, &PacketHandler::block_change);
 }
 
 int PacketHandler::unhandledPacket(User* user)
@@ -297,9 +299,8 @@ int PacketHandler::login_request(User* user)
   int64_t mapseed;
   int8_t dimension;
 
-  // As of version 1.5, the password is no longer sent (at least for non-authenticated mode)
-  //user->buffer >> version >> player >> passwd >> mapseed >> dimension;
-  user->buffer >> version >> player >> mapseed >> dimension;
+  // As of version 1.8 these are the only two values that are sent.
+  user->buffer >> version >> player;
 
   if (!user->buffer)
   {
@@ -1183,7 +1184,7 @@ int PacketHandler::arm_animation(User* user)
   user->buffer.removePacket();
 
   Packet pkt;
-  pkt << (int8_t)PACKET_ARM_ANIMATION << (int32_t)user->UID << animType;
+  pkt << (int8_t)PACKET_ANIMATION << (int32_t)user->UID << animType;
   user->sendOthers(pkt);
 
   (static_cast<Hook1<bool, const char*>*>(Mineserver::get()->plugin()->getHook("PlayerArmSwing")))->doAll(user->nick.c_str());
@@ -1300,7 +1301,7 @@ int PacketHandler::use_entity(User* user)
         if ((*it)->health <= 0)
         {
           Packet pkt;
-          pkt << PACKET_DEATH_ANIMATION << (int32_t)(*it)->UID << (int8_t)3;
+          pkt << PACKET_ENTITY_STATUS << (int32_t)(*it)->UID << (int8_t)3;
           (*it)->sendOthers(pkt);
         }
         break;
@@ -1345,9 +1346,20 @@ int PacketHandler::server_list_ping(User* user)
   temp.append(delimeter);
   temp.append(itoa(Mineserver::get()->config()->iData("system.user_limit"), buffer,10)); // Max players
 
+  user->buffer << Protocol::kick(temp);
 
-  user->buffer << (int8_t)PACKET_KICK << temp;
+  return PACKET_OK;
+}
 
+int PacketHandler::block_change(User* user)
+{
+  int32_t x, z;
+  int8_t y, type, meta;
+
+
+  user->buffer >> x >> y >> z >> type >> meta;
+
+  user->buffer.removePacket();
   return PACKET_OK;
 }
 

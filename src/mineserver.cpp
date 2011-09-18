@@ -66,6 +66,7 @@
 #include "cliScreen.h"
 #include "hook.h"
 #include "mob.h"
+#include "protocol.h"
 //#include "minecart.h"
 #ifdef WIN32
 static bool quit = false;
@@ -758,6 +759,13 @@ bool Mineserver::run()
           (*it)->pushMap();
           (*it)->popMap();
         }
+
+        // Update Player List
+        // TODO: If someone logs off we need to send this with false.
+        //       Also calculate latency between server and client.  Replace static ping with that.
+        Packet pkt;
+        pkt << Protocol::playerListItem( (*it)->nick, true, 100);
+        (*User::all().begin())->sendAll(pkt);
 
       }
 

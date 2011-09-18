@@ -1360,7 +1360,8 @@ bool User::sethealth(int userHealth)
   }
   if (health == userHealth)
   {
-    buffer << Protocol::updateHealth(userHealth);
+    //buffer << Protocol::updateHealth(userHealth); // Why update if they are equal?
+    //The above will fire everytime we do enviormental damage check.
     return false;
   }
   if (userHealth < health)
@@ -1370,7 +1371,7 @@ bool User::sethealth(int userHealth)
     {
       return false;
     }
-    sendAll(Protocol::armAnimation(UID, ANIMATE_DAMAGE));
+    sendAll(Protocol::animation(UID, ANIMATE_DAMAGE));
   }
   healthtimeout = time(NULL);
 

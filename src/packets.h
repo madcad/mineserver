@@ -64,7 +64,7 @@ enum
   PACKET_PLAYER_DIGGING            = 0x0e,
   PACKET_PLAYER_BLOCK_PLACEMENT    = 0x0f,
   PACKET_HOLDING_CHANGE            = 0x10,
-  PACKET_ARM_ANIMATION             = 0x12,
+  PACKET_ANIMATION                 = 0x12,
   PACKET_ENTITY_CROUCH             = 0x13,
   PACKET_INVENTORY_CLOSE           = 0x65,
   PACKET_INVENTORY_CHANGE          = 0x66,
@@ -89,7 +89,7 @@ enum
   PACKET_ENTITY_LOOK               = 0x20,
   PACKET_ENTITY_LOOK_RELATIVE_MOVE = 0x21,
   PACKET_ENTITY_TELEPORT           = 0x22,
-  PACKET_DEATH_ANIMATION           = 0x26,
+  PACKET_ENTITY_STATUS             = 0x26,
   PACKET_ENTITY_METADATA           = 0x28,
   PACKET_PRE_CHUNK                 = 0x32,
   PACKET_MAP_CHUNK                 = 0x33,
@@ -100,7 +100,8 @@ enum
   PACKET_PROGRESS_BAR              = 0x69,
   PACKET_TRANSACTION               = 0x6a,
   //PACKET_COMPLEX_ENTITIES          = 0x3b,
-  PACKET_PING                      = 0xfe,
+  PACKET_PLAYER_LIST_ITEM          = 0xc9,
+  PACKET_SERVER_LIST_PING          = 0xfe,
   PACKET_KICK                      = 0xff,
 
 
@@ -315,6 +316,8 @@ public:
   static int change_sign(User* user);
   static int inventory_transaction(User* user);
   static int server_list_ping(User* user);
+  static int block_change(User* user);
+
 
   static int inventory_change(User* user);
   static int inventory_close(User* user);

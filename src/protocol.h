@@ -15,20 +15,23 @@
 class Protocol
 {
   public:
-    static Packet armAnimation(int eid, int aid)
+    // Animation (http://mc.kev009.com/Protocol#Animation_.280x12.29)
+    static Packet animation(int eid, int aid)
     {
       Packet ret;
-      ret << (int8_t)PACKET_ARM_ANIMATION << (int32_t)eid << (int8_t)aid;
+      ret << (int8_t)PACKET_ANIMATION << (int32_t)eid << (int8_t)aid;
       return ret;
     }
 
-    static Packet deathAnimation(int eid, int aid)
+    // Entity Status (http://mc.kev009.com/Protocol#Entity_Status_.280x26.29)
+    static Packet entityStatus(int eid, int aid)
     {
       Packet ret;
-      ret << (int8_t)PACKET_DEATH_ANIMATION << (int32_t)eid << (int8_t)aid;
+      ret << (int8_t)PACKET_ENTITY_STATUS << (int32_t)eid << (int8_t)aid;
       return ret;
     }
 
+    // Entity Metadata (http://mc.kev009.com/Protocol#Entity_Metadata_.280x28.29)
     static Packet entityMetadata(int eid, MetaData& metadata)
     {
       Packet ret;
@@ -36,6 +39,7 @@ class Protocol
       return ret;
     }
 
+    // Mob Spawn (http://mc.kev009.com/Protocol#Mob_Spawn_.280x18.29)
     static Packet mobSpawn(int eid, int8_t type, double x, double y, double z, int yaw, int pitch, MetaData& metadata)
     {
       // Warning! This converts absolute double coordinates to absolute integer coordinates!
@@ -51,6 +55,7 @@ class Protocol
       return Protocol::mobSpawn(mob.UID, mob.type, mob.x, mob.y, mob.z, mob.yaw, mob.pitch, mob.metadata);
     }
 
+    // Destory Entity (http://mc.kev009.com/Protocol#Destroy_Entity_.280x1D.29)
     static Packet destroyEntity(int eid)
     {
       Packet ret;
@@ -58,6 +63,7 @@ class Protocol
       return ret;
     }
 
+    // Entity Teleport (http://mc.kev009.com/Protocol#Entity_Teleport_.280x22.29)
     static Packet entityTeleport(int eid, double x, double y, double z, int yaw, int pitch)
     {
       Packet ret;
@@ -67,6 +73,7 @@ class Protocol
       return ret;
     }
 
+    // Entity Look (http://mc.kev009.com/Protocol#Entity_Look_.280x20.29)
     static Packet entityLook(int eid, int yaw, int pitch)
     {
       Packet ret;
@@ -79,6 +86,7 @@ class Protocol
       return entityLook(eid, angleToByte(yaw), angleToByte(pitch));
     }
 
+    // Entity Relative Move (http://mc.kev009.com/Protocol#Entity_Relative_Move_.280x1F.29)
     static Packet entityRelativeMove(int eid, double dx, double dy, double dz)
     {
       Packet ret;
@@ -87,6 +95,7 @@ class Protocol
       return ret;
     }
     
+    // Entity Look and Relative Move (http://mc.kev009.com/Protocol#Entity_Look_and_Relative_Move_.280x21.29)
     static Packet entityLookRelativeMove(int eid, double dx, double dy, double dz, int yaw, int pitch)
     {
       Packet ret;
@@ -96,6 +105,7 @@ class Protocol
       return ret;
     }
 
+    // Login Response (http://mc.kev009.com/Protocol#Server_to_Client)
     static Packet loginResponse(int eid)
     {
       Packet ret;
@@ -104,6 +114,7 @@ class Protocol
       return ret;
     }
 
+    // Spawn Position (http://mc.kev009.com/Protocol#Spawn_Position_.280x06.29)
     static Packet spawnPosition(int x, int y, int z)
     {
       Packet ret;
@@ -111,6 +122,7 @@ class Protocol
       return ret;
     }
 
+    // Time Update (http://mc.kev009.com/Protocol#Time_Update_.280x04.29)
     static Packet timeUpdate(int64_t time)
     {
       Packet ret;
@@ -118,6 +130,7 @@ class Protocol
       return ret;
     }
 
+    // Kick (http://mc.kev009.com/Protocol#Disconnect.2FKick_.280xFF.29)
     static Packet kick(std::string msg)
     {
       Packet ret;
@@ -125,6 +138,7 @@ class Protocol
       return ret;
     }
 
+    // Named Entity Spawn (http://mc.kev009.com/Protocol#Named_Entity_Spawn_.280x14.29)
     static Packet namedEntitySpawn(int eid, std::string nick, double x, double y, double z, int yaw, int pitch, int item)
     {
       Packet ret;
@@ -134,6 +148,7 @@ class Protocol
       return ret;
     }
 
+    // Collect Item (http://mc.kev009.com/Protocol#Collect_Item_.280x16.29)
     static Packet collectItem(int itemEid, int eid)
     {
       Packet ret;
@@ -141,6 +156,7 @@ class Protocol
       return ret;
     }
 
+    // Pre Chunk (http://mc.kev009.com/Protocol#Pre-Chunk_.280x32.29)
     static Packet preChunk(int x, int z, bool create)
     {
       Packet ret;
@@ -148,6 +164,7 @@ class Protocol
       return ret;
     }
 
+    // Player Position and Look (http://mc.kev009.com/Protocol#Player_Position_.26_Look_.280x0D.29)
     static Packet playerPositionAndLook(double x, double y, double stance, double z, float yaw, float pitch, bool onGround)
     {
       Packet ret;
@@ -155,6 +172,7 @@ class Protocol
       return ret;
     }
 
+    // Respawn (http://mc.kev009.com/Protocol#Respawn_.280x09.29)
     static Packet respawn(int world = 0)
     {
       Packet ret;
@@ -162,6 +180,7 @@ class Protocol
       return ret;
     }
 
+    // Update Health (http://mc.kev009.com/Protocol#Update_Health_.280x08.29)
     static Packet updateHealth(int health)
     {
       Packet ret;
@@ -169,10 +188,19 @@ class Protocol
       return ret;
     }
 
+    // Entity Equipment (http://mc.kev009.com/Protocol#Entity_Equipment_.280x05.29)
     static Packet entityEquipment(int eid, int slot, int type, int damage)
     {
       Packet ret;
       ret << (int8_t)PACKET_ENTITY_EQUIPMENT << (int32_t)eid << (int16_t)slot << (int16_t)type << (int16_t)damage;
+      return ret;
+    }
+
+    // Player List Item (http://mc.kev009.com/Protocol#Player_List_Item_.280xC9.29)
+    static Packet playerListItem(std::string name, int8_t online, int16_t ping)
+    {
+      Packet ret;
+      ret << (int8_t)PACKET_PLAYER_LIST_ITEM << (std::string)name << (int8_t)online << (int16_t)ping;
       return ret;
     }
 };
