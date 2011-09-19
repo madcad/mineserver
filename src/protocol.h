@@ -125,7 +125,7 @@ class Protocol
     static Packet entityVelocity( int32_t EID, int16_t x, int16_t y, int16_t z )
     {
       Packet ret;
-      ret << (int8_t)PACKET_ENTITY_VELOCITY << (int16_t)x << (int16_t)y << (int16_t)z;
+      ret << (int8_t)PACKET_ENTITY_VELOCITY << (int32_t)EID << (int16_t)x << (int16_t)y << (int16_t)z;
       return ret;
     }
 
@@ -150,7 +150,7 @@ class Protocol
     static Packet chatMessage( std::string message )
     {
       Packet ret;
-      ret << (int8_t)PACKET_HANDSHAKE << message;
+      ret << (int8_t)PACKET_CHAT_MESSAGE << message;
       return ret;
     }
 
@@ -321,10 +321,10 @@ class Protocol
 
     // Open Window (http://mc.kev009.com/Protocol#Open_window_.280x64.29)
     // To be updated. Still needs to be done.
-    static Packet openWindow( int8_t windowID, int8_t inventoryType, std::string windowType, int8_t slots )
+    static Packet openWindow( int8_t windowID, int8_t inventoryType, std::string windowTitle, int8_t slots )
     {
       Packet ret;
-      ret << (int8_t)PACKET_OPEN_WINDOW << (int8_t)windowID  << (int8_t)inventoryType << (std::string)windowType << (int8_t)slots;
+      ret << (int8_t)PACKET_OPEN_WINDOW << (int8_t)windowID  << (int8_t)inventoryType << (std::string)windowTitle << (int8_t)slots;
       return ret;
     }
 
@@ -341,6 +341,15 @@ class Protocol
     {
       Packet ret;
       ret << (int8_t)PACKET_TRANSACTION << (int8_t)windowID << (int16_t)actionNumber << (int8_t)accepted;
+      return ret;
+    }
+
+    // Explosion (http://mc.kev009.com/Protocol#Explosion_.280x3C.29)
+    //TODO: Fix so that we include records.
+    static Packet explosion( double centerX, double centerY, double centerZ, float radius, int32_t count)
+    {
+      Packet ret;
+      ret << (int8_t)PACKET_EXPLOSION << (double)centerX << (double)centerY << (double)centerZ << (float)radius << (int32_t)count;
       return ret;
     }
 };

@@ -78,7 +78,7 @@ void BlockLadder::onNeighbourBroken(User* user, int16_t oldblock, int32_t x, int
   {
     Mineserver::get()->map(map)->sendBlockChange(x, y, z, BLOCK_AIR, 0);
     Mineserver::get()->map(map)->setBlock(x, y, z, BLOCK_AIR, 0);
-    Mineserver::get()->map(map)->createPickupSpawn(x, y, z, block, 1, 0, NULL);
+    Mineserver::get()->map(map)->createPickupSpawn(x, y, z, block, 1, 0, NULL, false);
   }
 
 }
@@ -165,7 +165,7 @@ void BlockLadder::onReplace(User* user, int16_t newblock, int32_t x, int8_t y, i
 
   Mineserver::get()->map(map)->sendBlockChange(x, y, z, BLOCK_AIR, 0);
   Mineserver::get()->map(map)->setBlock(x, y, z, BLOCK_AIR, 0);
-  Mineserver::get()->map(map)->createPickupSpawn(x, y, z, oldblock, 1, 0, NULL);
+  Mineserver::get()->map(map)->createPickupSpawn(x, y, z, oldblock, 1, 0, NULL, false);
 }
 
 void BlockLadder::onNeighbourMove(User* user, int16_t oldblock, int32_t x, int8_t y, int32_t z, int map, int8_t direction)

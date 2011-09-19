@@ -39,6 +39,8 @@
 #include "furnaceManager.h"
 #include "mcregion.h"
 #include "protocol.h"
+#include "projectileManager.h"
+#include "items/projectile.h"
 
 // Copy Construtor
 Map::Map(const Map& oldmap)
@@ -959,7 +961,7 @@ bool Map::sendPickupSpawn(spawnedItem item)
   return true;
 }
 
-void Map::createPickupSpawn(int x, int y, int z, int type, int count, int health, User* user)
+void Map::createPickupSpawn(int x, int y, int z, int type, int count, int health, User* user, bool thrown)
 {
   spawnedItem item;
   item.EID      = Mineserver::generateEID();
@@ -989,34 +991,14 @@ void Map::createPickupSpawn(int x, int y, int z, int type, int count, int health
     y = temp_y;
   }
 
-  item.pos.x()  = x * 32;
-  item.pos.y()  = y * 32;
-  item.pos.z()  = z * 32;
-  //Randomize spawn position a bit
-  item.pos.x() += 5 + (rand() % 22);
-  item.pos.z() += 5 + (rand() % 22);
-
-  sendPickupSpawn(item);
-}
-
-bool Map::sendProjectileSpawn(User* user, int8_t projID)
-{
-  if (!projID)
-  {
-    return false;
-  }
-
-  Packet  pkt;
-  int32_t EID = Mineserver::generateEID();
-  float   tempMult = 1.f - abs(user->pos.pitch / 90.f);
 
   //
-  // Below is for position and velocity
+  // Below is for position
   //
   double tempx = ( user->pos.x * 32 );
   double tempy = ( user->pos.y + 1.5f ) * 32;
   double tempz = ( user->pos.z * 32 );
-  int distFromUser = 50; // 32 is one whole block away, 50 seems to work while walking
+  int distFromUser = 16; // 32 is one whole block away
 
   //userYaw makes the player's yaw between 0-359
   float userYaw = ((int)user->pos.yaw % 360) + (user->pos.yaw - (int)user->pos.yaw);
@@ -1043,17 +1025,50 @@ bool Map::sendProjectileSpawn(User* user, int8_t projID)
     tempz = ( ( distFromUser * cos(user->pos.yaw * (M_PI / 180.0f) ) ) * cos( user->pos.pitch * (M_PI / 180.0f) ) ) + (user->pos.z * 32);
   }
 
-  vec pos = vec((int)tempx, (int)tempy, (int)tempz);
 
-  //The 9000 and 14000 are based off of trial and error.  Not calculated to exactly mimic notchian projectile.
-  vec vel = vec((int)(sin(-(user->pos.yaw / 360.f) * 2.f * M_PI) * cos(user->pos.pitch * (M_PI / 180.0f)) * 9000.f),
-                (int)(sinf(-(user->pos.pitch / 90.f)) * 14000.f),
-                (int)(cos(-(user->pos.yaw / 360.f) * 2.f * M_PI) * cos(user->pos.pitch * (M_PI / 180.0f)) * 9000.f));
+  item.pos.x()  = tempx;
+  item.pos.y()  = tempy;
+  item.pos.z()  = tempz;
 
-  pkt << Protocol::entity( (int32_t)EID )
-      << Protocol::addObject( (int32_t)EID, (int8_t)projID, (int32_t)pos.x(), (int32_t)pos.y(), (int32_t)pos.z(), (int32_t)0 )
-      << Protocol::entityVelocity( (int32_t)EID, (int16_t)vel.x(), (int16_t)vel.y(), (int16_t)vel.z() );
+  //item.pos.x()  = x * 32;
+  //item.pos.y()  = y * 32;
+  //item.pos.z()  = z * 32;
+  //Randomize spawn position a bit
+  //item.pos.x() += 5 + (rand() % 22);
+  //item.pos.z() += 5 + (rand() % 22);
 
+  sendPickupSpawn(item);
+
+  if( thrown )
+  {
+  const int horizontalVelocity = 0.30 * 8000;
+  const int verticalVelocity = 0.75 * 8000;
+
+  Packet  pkt;
+  pkt << Protocol::entityVelocity( item.EID, (int)(sin(-(user->pos.yaw / 360.f) * 2.f * M_PI) * cos(user->pos.pitch * (M_PI / 180.0f)) * horizontalVelocity),
+              (int)(sinf(-(user->pos.pitch / 90.f)) * verticalVelocity),
+              (int)(cos(-(user->pos.yaw / 360.f) * 2.f * M_PI) * cos(user->pos.pitch * (M_PI / 180.0f)) * horizontalVelocity));
+  user->sendAll(pkt);
+  }
+
+}
+
+bool Map::sendProjectileSpawn(User* user, int8_t projID)
+{
+  if (!projID)
+  {
+    return false;
+  }
+
+  ItemProjectile* projectile = new ItemProjectile(user, projID);
+
+  Mineserver::get()->projectileManager()->addProjectile((ItemProjectilePtr)projectile);
+
+  Packet  pkt;
+
+  pkt << Protocol::entity( (int32_t)projectile->getEID() )
+      << Protocol::addObject( (int32_t)projectile->getEID(), (int8_t)projID, (int32_t)projectile->getPosition().x, (int32_t)projectile->getPosition().y, (int32_t)projectile->getPosition().z, (int32_t)0 )
+      << Protocol::entityVelocity( (int32_t)projectile->getEID(), (int16_t)projectile->getVelocity().x, (int16_t)projectile->getVelocity().y, (int16_t)projectile->getVelocity().z );
 
   user->sendAll(pkt);
 

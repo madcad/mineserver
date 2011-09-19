@@ -135,7 +135,7 @@ bool BlockBasic::spawnBlockItem(const int32_t x, const int8_t y, const int32_t z
   BLOCKDROPS[block]->getDrop(item, count, item_meta);
   if (count)
   {
-    Mineserver::get()->map(map)->createPickupSpawn(x, y, z, item, count, item_meta, NULL);
+    Mineserver::get()->map(map)->createPickupSpawn(x, y, z, item, count, item_meta, NULL, false);
     return true;
   }
   return false;

@@ -291,12 +291,12 @@ void map_createPickupSpawn(int x, int y, int z, int type, int count, int health,
   if (user != NULL)
   {
     tempUser = userFromName(std::string(user));
-    Mineserver::get()->map(tempUser->pos.map)->createPickupSpawn(x, y, z, type, count, health, tempUser);
+    Mineserver::get()->map(tempUser->pos.map)->createPickupSpawn(x, y, z, type, count, health, tempUser, false);
 
   }
   else
   {
-    Mineserver::get()->map(0)->createPickupSpawn(x, y, z, type, count, health, NULL);
+    Mineserver::get()->map(0)->createPickupSpawn(x, y, z, type, count, health, NULL, false);
   }
 }
 

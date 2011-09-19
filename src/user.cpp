@@ -177,7 +177,7 @@ User::~User()
     {
       Mineserver::get()->map(pos.map)->createPickupSpawn((int)pos.x, (int)pos.y, (int)pos.z,
           inventoryHolding.getType(), inventoryHolding.getCount(),
-          inventoryHolding.getHealth(), this);
+          inventoryHolding.getHealth(), this, false);
       inventoryHolding.setType(-1);
     }
 
@@ -1419,7 +1419,7 @@ bool User::dropInventory()
   {
     if (inv[i].getType() != -1)
     {
-      Mineserver::get()->map(pos.map)->createPickupSpawn((int)pos.x, (int)pos.y, (int)pos.z, inv[i].getType(), inv[i].getCount(), inv[i].getHealth(), this);
+      Mineserver::get()->map(pos.map)->createPickupSpawn((int)pos.x, (int)pos.y, (int)pos.z, inv[i].getType(), inv[i].getCount(), inv[i].getHealth(), this, false);
       inv[i].setType(-1);
     }
   }
