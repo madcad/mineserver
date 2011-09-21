@@ -96,4 +96,6 @@ inline int8_t angleToByte(float angle)
 }
 
 
+std::string itoa(int value, int base);
+
 #endif

@@ -1343,7 +1343,7 @@ int PacketHandler::server_list_ping(User* user)
   temp.append(delimeter);
   temp.append("0"); // Current number or players
   temp.append(delimeter);
-  temp.append(itoa(Mineserver::get()->config()->iData("system.user_limit"), buffer,10)); // Max players
+  temp.append(itoa(Mineserver::get()->config()->iData("system.user_limit"), 10)); // Max players
 
   user->buffer << Protocol::kick(temp);
 
