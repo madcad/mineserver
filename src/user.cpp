@@ -881,11 +881,13 @@ int8_t User::relativeToBlock(const int32_t x, const int8_t y, const int32_t z)
     // We compare on the x axis
     if (diffX > 0)
     {
-      direction = BLOCK_BOTTOM;
+      direction = BLOCK_WEST;
+      //std::cout << "BLOCK_WEST" << std::endl;
     }
     else
     {
       direction = BLOCK_EAST;
+      //std::cout << "BLOCK_EAST" << std::endl;
     }
   }
   else
@@ -894,10 +896,12 @@ int8_t User::relativeToBlock(const int32_t x, const int8_t y, const int32_t z)
     if (diffZ > 0)
     {
       direction = BLOCK_SOUTH;
+      //std::cout << "BLOCK_SOUTH" << std::endl;
     }
     else
     {
       direction = BLOCK_NORTH;
+      //std::cout << "BLOCK_NORTH" << std::endl;
     }
   }
   return direction;
@@ -1496,3 +1500,4 @@ void User::setCurrentItemSlot(int16_t item_slot)
 {
   m_currentItemSlot = item_slot;
 }
+

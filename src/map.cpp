@@ -991,51 +991,56 @@ void Map::createPickupSpawn(int x, int y, int z, int type, int count, int health
     y = temp_y;
   }
 
-
-  //
-  // Below is for position
-  //
-  double tempx = ( user->pos.x * 32 );
-  double tempy = ( user->pos.y + 1.5f ) * 32;
-  double tempz = ( user->pos.z * 32 );
-  int distFromUser = 16; // 32 is one whole block away
-
-  //userYaw makes the player's yaw between 0-359
-  float userYaw = ((int)user->pos.yaw % 360) + (user->pos.yaw - (int)user->pos.yaw);
-  if( user->pos.yaw < 0 )
+  //TODO: make a function that in user.cpp
+  //      struct pos positionInFrontOfUsersView( int distanceFromUser )
+  if( thrown )
   {
-    userYaw += 360;
-  }
+    // Below is for position
+    double tempx = ( user->pos.x * 32 );
+    double tempy = ( user->pos.y + 1.5f ) * 32;
+    double tempz = ( user->pos.z * 32 );
+    int distFromUser = 16; // 32 is one whole block away
 
-  if( user->pos.pitch < 0 )
+    //userYaw makes the player's yaw between 0-359
+    float userYaw = ((int)user->pos.yaw % 360) + (user->pos.yaw - (int)user->pos.yaw);
+    if( user->pos.yaw < 0 )
+    {
+      userYaw += 360;
+    }
+
+    // Change below to be just * -1 in tenary
+    if( user->pos.pitch < 0 )
+    {
+      tempy = ( distFromUser * abs(sin(user->pos.pitch / 90.f))) + (user->pos.y + 1.5f) * 32;
+    }
+    else if ( user->pos.pitch > 0 )
+    {
+      tempy = -( distFromUser * abs(sin(user->pos.pitch / 90.f))) + (user->pos.y + 1.5f) * 32;
+    }
+    //Is to possbile to change below?
+    if( userYaw != 0 && userYaw != 180 )
+    {
+      tempx = ( ( -distFromUser * sin(user->pos.yaw * (M_PI / 180.0f) ) ) * cos( user->pos.pitch * (M_PI / 180.0f) ) ) + (user->pos.x * 32);
+    }
+    if( userYaw != 90 && userYaw != 270 )
+    {
+      tempz = ( ( distFromUser * cos(user->pos.yaw * (M_PI / 180.0f) ) ) * cos( user->pos.pitch * (M_PI / 180.0f) ) ) + (user->pos.z * 32);
+    }
+
+    item.pos.x()  = tempx;
+    item.pos.y()  = tempy;
+    item.pos.z()  = tempz;
+
+  }
+  else
   {
-    tempy = ( distFromUser * abs(sin(user->pos.pitch / 90.f))) + (user->pos.y + 1.5f) * 32;
+    item.pos.x()  = x * 32;
+    item.pos.y()  = y * 32;
+    item.pos.z()  = z * 32;
+    //Randomize spawn position a bit
+    item.pos.x() += 5 + (rand() % 22);
+    item.pos.z() += 5 + (rand() % 22);
   }
-  else if ( user->pos.pitch > 0 )
-  {
-    tempy = -( distFromUser * abs(sin(user->pos.pitch / 90.f))) + (user->pos.y + 1.5f) * 32;
-  }
-
-  if( userYaw != 0 && userYaw != 180 )
-  {
-    tempx = ( ( -distFromUser * sin(user->pos.yaw * (M_PI / 180.0f) ) ) * cos( user->pos.pitch * (M_PI / 180.0f) ) ) + (user->pos.x * 32);
-  }
-  if( userYaw != 90 && userYaw != 270 )
-  {
-    tempz = ( ( distFromUser * cos(user->pos.yaw * (M_PI / 180.0f) ) ) * cos( user->pos.pitch * (M_PI / 180.0f) ) ) + (user->pos.z * 32);
-  }
-
-
-  item.pos.x()  = tempx;
-  item.pos.y()  = tempy;
-  item.pos.z()  = tempz;
-
-  //item.pos.x()  = x * 32;
-  //item.pos.y()  = y * 32;
-  //item.pos.z()  = z * 32;
-  //Randomize spawn position a bit
-  //item.pos.x() += 5 + (rand() % 22);
-  //item.pos.z() += 5 + (rand() % 22);
 
   sendPickupSpawn(item);
 

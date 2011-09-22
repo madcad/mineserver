@@ -747,6 +747,7 @@ void sendRules(std::string user, std::string command, std::deque<std::string> ar
 }
 void about(std::string user, std::string command, std::deque<std::string> args)
 {
+  //TODO: get version of mineserver
   std::ostringstream msg;
   if (mineserver->config.bData("system.show_version"))
   {
@@ -762,7 +763,7 @@ void sendHelp(std::string user, std::string command, std::deque<std::string> arg
 
   CommandList* commandList = &m_Commands; // defaults
   std::string commandColor = MC_COLOR_BLUE;
-  const uint8_t commandsPerPage = 8;
+  const uint8_t commandsPerPage = 9; // 10 will fit nicely, -1 for the help title menu
   const uint8_t maxLineLength = 62; // Makes one command per line with longer lines cut and we add ...
   const uint8_t numPages = (commandList->size() + commandsPerPage - 1) / commandsPerPage;
   char buffer[33];
