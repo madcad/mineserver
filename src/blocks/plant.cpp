@@ -267,15 +267,15 @@ bool BlockPlant::onBroken(User* user, int8_t status, int32_t x, int8_t y, int32_
   remBlock(x, y, z, map);
   if (block == BLOCK_CROPS && meta == 7)
   {
-    Mineserver::get()->map(map)->createPickupSpawn(x, y + 1, z, ITEM_WHEAT, 1, 0, NULL);
+    Mineserver::get()->map(map)->createPickupSpawn(x, y + 1, z, ITEM_WHEAT, 1, 0, NULL, false);
   }
   else if (block == BLOCK_CROPS)
   {
-    Mineserver::get()->map(map)->createPickupSpawn(x, y + 1, z, ITEM_SEEDS, 1, 0, NULL);
+    Mineserver::get()->map(map)->createPickupSpawn(x, y + 1, z, ITEM_SEEDS, 1, 0, NULL, false);
   }
   else if (block == BLOCK_REED)
   {
-    Mineserver::get()->map(map)->createPickupSpawn(x, y + 1, z, ITEM_REED, 1, 0, NULL);
+    Mineserver::get()->map(map)->createPickupSpawn(x, y + 1, z, ITEM_REED, 1, 0, NULL, false);
   }
   else
   {
@@ -396,7 +396,7 @@ bool BlockPlant::onPlace(User* user, int16_t newblock, int32_t x, int8_t y, int3
     Mineserver::get()->map(map)->setBlock(x, y - 1, z, BLOCK_SOIL, 0);
     if (SEEDS_CHANCE >= rand() % 10000)
     {
-      Mineserver::get()->map(map)->createPickupSpawn(x, y + 1, z, ITEM_SEEDS, 1, 0, NULL);
+      Mineserver::get()->map(map)->createPickupSpawn(x, y + 1, z, ITEM_SEEDS, 1, 0, NULL, false);
     }
     return true;
   }

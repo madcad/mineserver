@@ -1,6 +1,6 @@
 /*
-   Copyright (c) 2011, The Mineserver Project
-   All rights reserved.
+  Copyright (c) 2011, The Mineserver Project
+  All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -23,22 +23,24 @@
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+*/
 
-#pragma once
+#ifndef PROJECTILE_MANAGER_H
+#define PROJECTILE_MANAGER_H
 
-#include "basic.h"
+class ItemProjectile;
 
-class User;
+typedef std::tr1::shared_ptr<ItemProjectile> ItemProjectilePtr;
 
-class BlockTNT : public BlockBasic
+class ProjectileManager
 {
 public:
-  inline bool affectedBlock(int block) const { return block == BLOCK_TNT; }
+  void update();
+  void addProjectile(ItemProjectilePtr temp);
+  void addProjectile(User* user, int8_t projID);
 
-  void onStartedDigging(User* user, int8_t status, int32_t x, int8_t y, int map, int32_t z, int8_t direction);
-  bool onPlace(User* user, int16_t newblock, int32_t x, int8_t y, int32_t z, int map, int8_t direction);
-  bool onInteract(User* user, int32_t x, int8_t y, int32_t z, int map);
-  bool rb(int32_t x,int8_t y,int8_t z,int map,User* user); // rb=Remove Block
-  void explode(User* user, int32_t x, int8_t y, int8_t z, int map);
+private:
+  typedef std::list<ItemProjectilePtr> ProjectileContainer;
+  ProjectileContainer m_aliveProjectiles;
 };
+#endif

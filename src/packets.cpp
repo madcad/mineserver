@@ -790,7 +790,12 @@ int PacketHandler::player_digging(User* user)
 #define itemSlot (36+user->currentItemSlot())
     if (user->inv[itemSlot].getType() > 0)
     {
-      Mineserver::get()->map(user->pos.map)->createPickupSpawn(user->pos.x, user->pos.y, user->pos.z, user->inv[itemSlot].getType(), 1, user->inv[itemSlot].getHealth(), user);
+      Mineserver::get()->map(user->pos.map)->createPickupSpawn(user->pos.x, user->pos.y, user->pos.z, user->inv[itemSlot].getType(), 1, user->inv[itemSlot].getHealth(), user, true);
+
+      vec vel = vec((int)(sin(-(user->pos.yaw / 360.f) * 2.f * M_PI) * cos(user->pos.pitch * (M_PI / 180.0f)) * 9000.f),
+                (int)(sinf(-(user->pos.pitch / 90.f)) * 14000.f),
+                (int)(cos(-(user->pos.yaw / 360.f) * 2.f * M_PI) * cos(user->pos.pitch * (M_PI / 180.0f)) * 9000.f));
+
 
       user->inv[itemSlot].decCount();
     }
@@ -1334,18 +1339,10 @@ int PacketHandler::server_list_ping(User* user)
 {
   user->buffer.removePacket();
 
-  std::string temp;
   std::string delimeter = "§";
-  char buffer [33];
 
   //TODO: Send correct MOTD, correct number or player
-  temp = "Mineserver MOTD"; // Message of the day
-  temp.append(delimeter);
-  temp.append("0"); // Current number or players
-  temp.append(delimeter);
-  temp.append(itoa(Mineserver::get()->config()->iData("system.user_limit"), 10)); // Max players
-
-  user->buffer << Protocol::kick(temp);
+  user->buffer << Protocol::kick("Mineserver MOTD" + delimeter + "0" + delimeter + my_itoa(Mineserver::get()->config()->iData("system.user_limit")));
 
   return PACKET_OK;
 }

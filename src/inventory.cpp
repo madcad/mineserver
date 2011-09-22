@@ -472,7 +472,7 @@ bool Inventory::windowClick(User* user, int8_t windowID, int16_t slot, int8_t ri
     {
       Mineserver::get()->map(user->pos.map)->createPickupSpawn((int)user->pos.x, (int)user->pos.y, (int)user->pos.z,
           user->inventoryHolding.getType(), user->inventoryHolding.getCount(),
-          user->inventoryHolding.getHealth(), user);
+          user->inventoryHolding.getHealth(), user, false);
       user->inventoryHolding.setType(-1);
     }
     return true;
@@ -969,14 +969,13 @@ bool Inventory::windowOpen(User* user, int8_t type, int32_t x, int32_t y, int32_
       if(_chestData == NULL)
         break;
 
-      user->buffer << (int8_t)PACKET_OPEN_WINDOW << (int8_t)type << (int8_t)INVENTORYTYPE_CHEST;
       if(_chestData->large())
       {
-        user->buffer.writeString(std::string("Large chest"));
+        user->buffer << Protocol::openWindow( (int8_t)type, (int8_t)INVENTORYTYPE_CHEST, std::string("Large Chest"), (int8_t)(_chestData->size()) );
       } else {
-        user->buffer.writeString(std::string("Chest"));
+        user->buffer << Protocol::openWindow( (int8_t)type, (int8_t)INVENTORYTYPE_CHEST, std::string("Chest"), (int8_t)(_chestData->size()) );
       }
-      user->buffer << (int8_t)(_chestData->size()); // size.. not a very good idea. lets just hope this will only return 27 or 54
+      // size.. not a very good idea. lets just hope this will only return 27 or 54
 
       for (size_t j = 0; j < _chestData->size(); j++)
       {
@@ -991,9 +990,8 @@ bool Inventory::windowOpen(User* user, int8_t type, int32_t x, int32_t y, int32_
     break;
 
   case WINDOW_WORKBENCH:
-    user->buffer << (int8_t)PACKET_OPEN_WINDOW << (int8_t)WINDOW_WORKBENCH  << (int8_t)INVENTORYTYPE_WORKBENCH;
-    user->buffer.writeString(std::string("Workbench"));
-    user->buffer  << (int8_t)0;
+    user->buffer <<  Protocol::openWindow( (int8_t)WINDOW_WORKBENCH, (int8_t)INVENTORYTYPE_WORKBENCH,
+                                           std::string("Workbench"), (int8_t)0 );
 
     for (uint32_t i = 0; i < openWorkbenches.size(); i++)
     {
@@ -1016,9 +1014,7 @@ bool Inventory::windowOpen(User* user, int8_t type, int32_t x, int32_t y, int32_
     break;
   case WINDOW_FURNACE:
 
-    user->buffer << (int8_t)PACKET_OPEN_WINDOW << (int8_t)WINDOW_FURNACE  << (int8_t)INVENTORYTYPE_FURNACE;
-	user->buffer.writeString(std::string("Furnace"));
-	user->buffer << (int8_t)0;
+  user->buffer <<  Protocol::openWindow(  (int8_t)WINDOW_FURNACE, (int8_t)INVENTORYTYPE_FURNACE, std::string("Furnace"), (int8_t)0 );
 
     for (uint32_t i = 0; i < chunk->furnaces.size(); i++)
     {
@@ -1129,7 +1125,7 @@ bool Inventory::windowClose(User* user, int8_t windowID)
   {
     Mineserver::get()->map(user->pos.map)->createPickupSpawn((int)user->pos.x, (int)user->pos.y, (int)user->pos.z,
         user->inventoryHolding.getType(), user->inventoryHolding.getCount(),
-        user->inventoryHolding.getHealth(), user);
+        user->inventoryHolding.getHealth(), user, false);
     user->inventoryHolding.setType(-1);
   }
 
@@ -1240,7 +1236,7 @@ bool Inventory::onwindowClose(User* user, int8_t type, int32_t x, int32_t y, int
                 {
                   Mineserver::get()->map(user->pos.map)->createPickupSpawn((int)user->pos.x, (int)user->pos.y, (int)user->pos.z,
                       inv[i]->workbench[slotNumber].getType(), inv[i]->workbench[slotNumber].getCount(),
-                      inv[i]->workbench[slotNumber].getHealth(), user);
+                      inv[i]->workbench[slotNumber].getHealth(), user, false);
                 }
               }
             }
@@ -1349,10 +1345,13 @@ bool Inventory::doCraft(Item* slots, int8_t width, int8_t height)
 bool Inventory::setSlot(User* user, int8_t windowID, int16_t slot, int16_t itemID, int8_t count, int16_t health)
 {
   //Mineserver::get()->logger()->log(1,"Setslot: " + dtos(slot) + " to " + dtos(itemID) + " (" + dtos(count) + ") health: " + dtos(health));
-  user->buffer << Protocol::setSlot( (int8_t)windowID, (int16_t)slot, (int16_t)itemID );
   if (itemID != -1)
   {
-    user->buffer << (int8_t)count << (int16_t)health;
+    user->buffer << Protocol::setSlot( (int8_t)windowID, (int16_t)slot, (int16_t)itemID, (int8_t)count, (int16_t)health );
+  }
+  else
+  {
+    user->buffer << Protocol::setSlot( (int8_t)windowID, (int16_t)slot, (int16_t)itemID );
   }
 
   return true;

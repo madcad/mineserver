@@ -161,7 +161,7 @@ public:
   }
 
   bool sendPickupSpawn(spawnedItem item);
-  void createPickupSpawn(int x, int y, int z, int type, int count, int health, User* user);
+  void createPickupSpawn(int x, int y, int z, int type, int count, int health, User* user, bool thrown);
 
   bool sendProjectileSpawn(User* user, int8_t projID);
 

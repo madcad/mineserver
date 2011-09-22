@@ -172,7 +172,8 @@ bool BlockChest::onBroken(User* user, int8_t status, int32_t x, int8_t y, int32_
                 (*chunk->chests[i]->items())[(size_t)item_i]->getType(),
                 (*chunk->chests[i]->items())[(size_t)item_i]->getCount(),
                 (*chunk->chests[i]->items())[(size_t)item_i]->getHealth(),
-                NULL);
+                NULL,
+                false);
           }
           chunk->chests[i]->items()->pop_back();
         }
@@ -188,7 +189,8 @@ bool BlockChest::onBroken(User* user, int8_t status, int32_t x, int8_t y, int32_
                 (*chunk->chests[i]->items())[item_i]->getType(),
                 (*chunk->chests[i]->items())[item_i]->getCount(),
                 (*chunk->chests[i]->items())[item_i]->getHealth(),
-                NULL);
+                NULL,
+                false);
           }
           chunk->chests[i]->items()->pop_back();
         }

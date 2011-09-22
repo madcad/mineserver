@@ -59,6 +59,7 @@ class Logger;
 class Inventory;
 class Mobs;
 class Mob;
+class ProjectileManager;
 
 #define MINESERVER
 #include "plugin_api.h"
@@ -174,6 +175,14 @@ public:
   {
     m_furnaceManager = furnaceManager;
   }
+
+
+  inline ProjectileManager* projectileManager() const
+  {
+    return m_projectileManager;
+  }
+
+
   inline PacketHandler* packetHandler() const
   {
     return m_packetHandler;
@@ -234,6 +243,7 @@ private:
   PacketHandler*  m_packetHandler;
   Inventory*      m_inventory;
   Mobs*           m_mobs;
+  ProjectileManager*  m_projectileManager;
 };
 
 #endif

@@ -67,6 +67,7 @@
 #include "hook.h"
 #include "mob.h"
 #include "protocol.h"
+#include "projectileManager.h"
 //#include "minecart.h"
 #ifdef WIN32
 static bool quit = false;
@@ -291,7 +292,8 @@ Mineserver::Mineserver()
      m_furnaceManager(NULL),
      m_packetHandler (NULL),
      m_inventory     (NULL),
-     m_mobs          (NULL)
+     m_mobs          (NULL),
+     m_projectileManager(NULL)
 {
   memset(&m_listenEvent, 0, sizeof(event));
   initConstants();
@@ -431,6 +433,7 @@ bool Mineserver::init()
   m_packetHandler  = new PacketHandler;
   m_inventory      = new Inventory(m_config->sData("system.path.data") + '/' + "recipes", ".recipe", "ENABLED_RECIPES.cfg");
   m_mobs           = new Mobs;
+  m_projectileManager = new ProjectileManager;
 
   return true;
 }
@@ -459,6 +462,7 @@ bool Mineserver::free()
   delete m_packetHandler;
   delete m_inventory;
   delete m_mobs;
+  delete m_projectileManager;
 
   if (m_plugin)
   {
@@ -692,6 +696,9 @@ bool Mineserver::run()
     {
       physics(i)->update();
     }
+
+    //Update Projectiles
+    projectileManager()->update();
 
     //Every 10 seconds..
     timeNow = time(0);
