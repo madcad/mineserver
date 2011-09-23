@@ -31,6 +31,7 @@
 #include "tools.h"
 #include "map.h"
 #include <iostream>
+#include <cmath>
 
 void ProjectileManager::update()
 {
