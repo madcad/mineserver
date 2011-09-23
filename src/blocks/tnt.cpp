@@ -26,6 +26,7 @@
  */
 
 #include <queue>
+#include <cmath>
 
 #include "default.h"
 #include "../mineserver.h"

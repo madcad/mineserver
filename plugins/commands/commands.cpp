@@ -33,6 +33,7 @@
 #include <stdint.h>
 #include <cstdlib>
 #include <ctime>
+#include <algorithm>
 
 #include "tr1.h"
 #include TR1INCLUDE(unordered_map)
