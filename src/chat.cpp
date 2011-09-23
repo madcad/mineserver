@@ -60,6 +60,22 @@ bool Chat::sendUserlist(User* user)
     {
       continue;
     }
+    if (IS_GUEST((*it)->permissions))
+    {
+        playerDesc += MC_COLOR_GREY;
+    }
+    if (IS_MEMBER((*it)->permissions))
+    {
+        playerDesc += MC_COLOR_WHITE;
+    }
+    if (IS_OP((*it)->permissions))
+    {
+        playerDesc += MC_COLOR_DARK_ORANGE;
+    }
+    if (IS_ADMIN((*it)->permissions))
+    {
+        playerDesc += MC_COLOR_RED;
+    }
     playerDesc += (*it)->nick;
     if ((*it)->muted)
     {
@@ -69,7 +85,7 @@ bool Chat::sendUserlist(User* user)
     {
       playerDesc += MC_COLOR_YELLOW + " (dnd)";
     }
-    playerDesc += ", ";
+    playerDesc += MC_COLOR_WHITE + ", ";
   }
   sendMsg(user, playerDesc, USER);
 
@@ -228,6 +244,11 @@ void Chat::handleChatMsg(User* user, std::string msg, const std::string& timeSta
   {
     LOG2(INFO, "<" + user->nick + "> " + msg);
     msg = timeStamp + " <" + MC_COLOR_DARK_MAGENTA + user->nick + MC_COLOR_WHITE + "> " + msg;
+  }
+  else if (IS_OP(user->permissions))
+  {
+    LOG2(INFO, "<" + user->nick + "> " + msg);
+    msg = timeStamp + " <" + MC_COLOR_DARK_ORANGE + user->nick + MC_COLOR_WHITE + "> " + msg;
   }
   else
   {
